@@ -25,6 +25,38 @@
 
         #ui { position: absolute; top: 20px; left: 20px; color: white; display: none; z-index: 100; font-size: 24px; font-family: monospace; }
         #fatality-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: red; opacity: 0; pointer-events: none; z-index: 500; }
+
+        /* Mobile Controls */
+        #mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 0, 0, 0.7);
+            border: 2px solid white;
+            color: white;
+            font-size: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .control-btn:active {
+            background: rgba(255, 0, 0, 0.9);
+        }
+
+        @media (min-width: 768px) {
+            #mobile-controls { display: none; }
+        }
+    </style>
     </style>
 </head>
 <body>
@@ -38,6 +70,15 @@
     </div>
 
     <div id="ui">LVL: <span id="lvl-count">1</span></div>
+    
+    <div id="mobile-controls">
+        <button class="control-btn" id="up-btn">↑</button>
+        <div style="display: flex; gap: 10px;">
+            <button class="control-btn" id="left-btn">←</button>
+            <button class="control-btn" id="right-btn">→</button>
+        </div>
+        <button class="control-btn" id="down-btn">↓</button>
+    </div>
     
     <script type="module">
         import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js';
@@ -102,6 +143,25 @@
         const keys = {};
         window.onkeydown = (e) => keys[e.code] = true;
         window.onkeyup = (e) => keys[e.code] = false;
+
+        // Mobile controls
+        const upBtn = document.getElementById('up-btn');
+        const downBtn = document.getElementById('down-btn');
+        const leftBtn = document.getElementById('left-btn');
+        const rightBtn = document.getElementById('right-btn');
+
+        function setKey(btn, keyCode, state) {
+            btn.addEventListener('touchstart', () => keys[keyCode] = state);
+            btn.addEventListener('touchend', () => keys[keyCode] = !state);
+            btn.addEventListener('mousedown', () => keys[keyCode] = state);
+            btn.addEventListener('mouseup', () => keys[keyCode] = !state);
+            btn.addEventListener('mouseleave', () => keys[keyCode] = !state); // in case mouse leaves
+        }
+
+        setKey(upBtn, 'ArrowUp', true);
+        setKey(downBtn, 'ArrowDown', true);
+        setKey(leftBtn, 'ArrowLeft', true);
+        setKey(rightBtn, 'ArrowRight', true);
 
         function update() {
             // Controller Check
